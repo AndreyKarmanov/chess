@@ -1,4 +1,4 @@
-#This is chess
+# This is chess
 
 class Board:
     pass
@@ -10,7 +10,7 @@ class Pieces:
 class Rook(Pieces):
     pass
 
-class Horse(Pieces):
+class Knight(Pieces):
     pass
 
 class Bishop(Pieces):
