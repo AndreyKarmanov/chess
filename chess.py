@@ -1,4 +1,7 @@
 # This is chess
+# Need for Andrey:
+    # available moves for currently selected pieces
+    # list of where all the pieces are 
 
 class Spot:
     pass
