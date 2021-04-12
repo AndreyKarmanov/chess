@@ -1,7 +1,30 @@
 #This is chess
 
 class Spot:
-    pass
+    def __init__(self, piece, x, y):
+        self._piece = piece
+        self._x = x
+        self._y = y
+
+    def getPiece():
+        return self._piece
+
+    def setPiece(p):
+        self._piece = p
+
+    def getX():
+        return self._x
+
+    def setX():
+        self._x = x
+
+    def getY():
+        return self._y
+
+    def setY():
+        self._y = y
+
+
 
 class Pieces:
     def __init__(self, colour):
