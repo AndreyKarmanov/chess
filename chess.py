@@ -29,7 +29,8 @@ class Pawn(Pieces):
     pass
 
 class Board:
-    pass
+    def __init__(self):
+        self._boxes = [[] for i in range(8)]
 
 class Player:
     pass
