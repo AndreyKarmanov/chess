@@ -1,6 +1,6 @@
 # This is chess
 
-class Board:
+class Spot:
     pass
 
 class Pieces:
@@ -23,4 +23,16 @@ class Queen(Pieces):
     pass
 
 class Pawn(Pieces):
+    pass
+
+class Board:
+    pass
+
+class Player:
+    pass
+
+class Move:
+    pass
+
+class Game:
     pass
