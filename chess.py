@@ -56,17 +56,13 @@ class Board:
         self._boxes = [['' for i in range(8)] for i in range(8)]
 
     def resetBoard(self): #! put this in init method?
-        # Pieces
-        colours = ((0, True), (7, False))
+        # Pieces and Pawns
+        colours = ((0, 1, True), (7, 6, False))
         pieces = (Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook)
         for info in colours:
             for i in range(8):
-                self._boxes[info[0]][i] = Spot(pieces[i](info[1]), info[0], i)
-
-        # Pawns
-        for i in range(8):
-            self._boxes[1][i] = Spot(Pawn(True), 1, i)
-            self._boxes[6][i] = Spot(Pawn(False), 6, i)
+                self._boxes[info[0]][i] = Spot(pieces[i](info[2]), info[0], i)
+                self._boxes[info[1]][i] = Spot(Pawn(info[2]), info[1], i)
 
         # Empty 
         for j in range(2, 6):
