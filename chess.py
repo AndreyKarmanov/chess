@@ -53,7 +53,25 @@ class Pawn(Pieces):
 
 class Board:
     def __init__(self):
-        self._boxes = [[] for i in range(8)]
+        self._boxes = [['' for i in range(8)] for i in range(8)]
+
+    def resetBoard(self): #! put this in init method?
+        # Pieces
+        colours = ((0, True), (7, False))
+        pieces = (Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook)
+        for info in colours:
+            for i in range(8):
+                self._boxes[info[0]][i] = Spot(pieces[i](info[1]), info[0], i)
+
+        # Pawns
+        for i in range(8):
+            self._boxes[1][i] = Spot(Pawn(True), 1, i)
+            self._boxes[6][i] = Spot(Pawn(False), 6, i)
+
+        # Empty 
+        for j in range(2, 6):
+            for i in range(8):
+                self._boxes[j][i] = Spot(None, j, i)
 
 class Player:
     pass
@@ -63,3 +81,7 @@ class Move:
 
 class Game:
     pass
+
+board = Board()
+board.resetBoard()
+print(board._boxes)
