@@ -54,7 +54,7 @@ class Pieces:
         self.y = y
 
     def withinBounds(self, x, y):
-        return x <= 7 and x >= 0 and y <= 7 and y >= 0
+        return 0 <= x <= 7 and 0 <= y <= 7
 
 
 class Rook(Pieces):
@@ -99,25 +99,24 @@ class Pawn(Pieces):
 
         # pawn is unique, as it can only move towards the enemy.
         if self._colour:
-            direction = 1
-        else:
             direction = -1
+        else:
+            direction = 1
 
         # checks if the square ahead of it is free
         if boxes[self.y + direction][self.x] is None:
-            moves.append((self.y + direction, self.x))
-        
+            moves.append((self.x, self.y + direction))
+
         # checks if there's an oposing piece to take
-        if boxes[self.y + direction][self.x + 1]._colour != self._colour:
-            moves.append((self.y + direction, self.x + 1))
-        if boxes[self.y + direction][self.x - 1]._colour != self._colour:
-            moves.append((self.y + direction, self.x - 1))
+        if boxes[self.y + direction][self.x + 1] and boxes[self.y + direction][self.x + 1]._colour != self._colour:
+            moves.append((self.x + 1, self.y + direction))
+        if boxes[self.y + direction][self.x - 1] and boxes[self.y + direction][self.x - 1]._colour != self._colour:
+            moves.append((self.x - 1, self.y + direction))
 
             # if it hasn't moved, it can do 2 steps foreward.
             if not self.moved:
                 if boxes[self.y + 2 * direction][self.x] is None or boxes[self.y + 2 * direction][self.x]._colour != self._colour:
-                    moves.append((self.y + 2 * direction, self.x))
-
+                    moves.append((self.x, self.y + 2 * direction))
         return moves
 
 
@@ -130,24 +129,32 @@ class Chess:
         self.board = Board(8, 8)
         self.resetBoard()
 
-        #white player and black player placeholders (these guys can store their individual pieces maybe)
+        # white player and black player placeholders (these guys can store their individual pieces maybe)
         self.white = white
         self.black = black
 
     def move(self, startX, startY, endX, endY):
 
+        # foolproof method for testing
+        if startX == endX and startY == endY:
+            return
+
         # Moves and deletes the piece that was at the landing square (if any)
         self.board._boxes[endY][endX] = self.board._boxes[startY][startX]
         self.board._boxes[startY][startX] = None
-        print(f'Moved {self.board._boxes[startY][startX]} to ({endX}, {endY})')
+        print(f'Moved ({startX}, {startY}) to ({endX}, {endY})')
+        print(self.board._boxes[startY][startX],
+              self.board._boxes[endY][endX], "swapped")
+        self.board._boxes[endY][endX].x = endX
+        self.board._boxes[endY][endX].y = endY
 
-        #Since the pawn just moved, it isn't allowed to move 2 squares again.
+        # Since the pawn just moved, it isn't allowed to move 2 squares again.
         if isinstance(self.board._boxes[endY][endX], Pawn):
             self.board._boxes[endY][endX].moved = True
 
         # if king.castling(): > logic for moving other pieces is contained within king class? not sure the best way to do this part tbh.
 
-    #test method please ignore
+    # test method please ignore
     def printBoard(self):
         for row in self.board._boxes:
             print([type(x) for x in row])
@@ -155,24 +162,17 @@ class Chess:
     # cool way of setting it up
     def resetBoard(self):  # ! put this in init method?
         # Pieces and Pawns
-        colours = ((0, 1, True), (7, 6, False))
+        colours = ((0, 1, False), (7, 6, True))
         pieces = (Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook)
         for info in colours:
             for i in range(8):
-                self.board._boxes[info[0]][i] = pieces[i](info[2], info[0], i)
-                self.board._boxes[info[1]][i] = Pawn(info[2], info[1], i)
+                self.board._boxes[info[0]][i] = pieces[i](info[2], i, info[0])
+                self.board._boxes[info[1]][i] = Pawn(info[2],  i, info[1])
 
         # Empty
         for j in range(2, 6):
             for i in range(8):
                 self.board._boxes[j][i] = None
 
-# board = Board()
-# board.resetBoard()
-# for row in board._boxes:
-#     print([type(x) for x in row])
-
-
-chess = Chess(Player(), Player())
-chess.move(0, 0, 0, 2)
-chess.printBoard()
+    def getBoard(self):
+        return self.board._boxes
