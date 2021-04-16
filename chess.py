@@ -53,14 +53,28 @@ class Pieces:
         self.x = x
         self.y = y
 
+    def withinBounds(self, x, y):
+        return x <= 7 and x >= 0 and y <= 7 and y >= 0
+
 
 class Rook(Pieces):
     pass
 
 
 class Knight(Pieces):
-    pass
+    def __init__(self, colour, x, y):
+        super().__init__(colour, x, y)
 
+    def getMoves(self, boxes: list):
+        moves = []
+        # eight possible knight moves
+        possible = ((1, 2), (-1, -2), (1, -2), (-1, 2), (2, 1), (-2, -1), (-2, 1), (-1, 2))
+        for move in possible:
+            coords = (self.y + move[0], self.x + move[1])
+            # checks if the new spot is within bounds and empty or occupied by an oposing piece 
+            if boxes[coords[0]][coords[1]] is None or boxes[coords[0]][coords[1]]._colour != self._colour and self.withinBounds(coords[1], coords[0]) is True: 
+                moves.append(coords[0], coords[1])
+        return moves
 
 class Bishop(Pieces):
     pass
@@ -89,12 +103,14 @@ class Pawn(Pieces):
         else:
             direction = -1
 
-        # checks if the square ahead of it is free or if ahead and diagonal have oposing pieces 
+        # checks if the square ahead of it is free
         if boxes[self.y + direction][self.x] is None:
             moves.append((self.y + direction, self.x))
-        elif boxes[self.y + direction][self.x + 1]._colour != self._colour:
+        
+        # checks if there's an oposing piece to take
+        if boxes[self.y + direction][self.x + 1]._colour != self._colour:
             moves.append((self.y + direction, self.x + 1))
-        elif boxes[self.y + direction][self.x - 1]._colour != self._colour:
+        if boxes[self.y + direction][self.x - 1]._colour != self._colour:
             moves.append((self.y + direction, self.x - 1))
 
             # if it hasn't moved, it can do 2 steps foreward.
@@ -144,7 +160,7 @@ class Chess:
         for info in colours:
             for i in range(8):
                 self.board._boxes[info[0]][i] = pieces[i](info[2], info[0], i)
-                self.board._boxes[info[1]][i] = Pawn(info[2],  info[1], i)
+                self.board._boxes[info[1]][i] = Pawn(info[2], info[1], i)
 
         # Empty
         for j in range(2, 6):
