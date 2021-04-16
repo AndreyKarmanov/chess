@@ -89,14 +89,18 @@ class Pawn(Pieces):
         else:
             direction = -1
 
-        # checks if the square ahead of it is free or an enemy
-        if boxes[self.y + direction][self.x] is None or boxes[self.y + direction][self.x]._colour != self._colour:
+        # checks if the square ahead of it is free or if ahead and diagonal have oposing pieces 
+        if boxes[self.y + direction][self.x] is None:
             moves.append((self.y + direction, self.x))
+        elif boxes[self.y + direction][self.x + 1]._colour != self._colour:
+            moves.append((self.y + direction, self.x + 1))
+        elif boxes[self.y + direction][self.x - 1]._colour != self._colour:
+            moves.append((self.y + direction, self.x - 1))
 
             # if it hasn't moved, it can do 2 steps foreward.
             if not self.moved:
-                if boxes[self.y + 2*direction][self.x] is None or boxes[self.y + 2*direction][self.x]._colour != self._colour:
-                    moves.append((self.y + 2*direction, self.x))
+                if boxes[self.y + 2 * direction][self.x] is None or boxes[self.y + 2 * direction][self.x]._colour != self._colour:
+                    moves.append((self.y + 2 * direction, self.x))
 
         return moves
 
