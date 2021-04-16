@@ -62,8 +62,19 @@ class Rook(Pieces):
 
 
 class Knight(Pieces):
-    pass
+    def __init__(self, colour, x, y):
+        super().__init__(colour, x, y)
 
+    def getMoves(self, boxes: list):
+        moves = []
+        # eight possible knight moves
+        possible = ((1, 2), (-1, -2), (1, -2), (-1, 2), (2, 1), (-2, -1), (-2, 1), (-1, 2))
+        for move in possible:
+            coords = (self.y + move[0], self.x + move[1])
+            # checks if the new spot is within bounds and empty or occupied by an oposing piece 
+            if boxes[coords[0]][coords[1]] is None or boxes[coords[0]][coords[1]]._colour != self._colour and self.withinBounds(coords[1], coords[0]) is True: 
+                moves.append(coords[0], coords[1])
+        return moves
 
 class Bishop(Pieces):
     pass
@@ -94,7 +105,6 @@ class Pawn(Pieces):
 
         # checks if the square ahead of it is free
         if boxes[self.y + direction][self.x] is None:
-            print("free move ahead", self.y + direction, self.x)
             moves.append((self.x, self.y + direction))
 
         # checks if there's an oposing piece to take
@@ -107,7 +117,6 @@ class Pawn(Pieces):
             if not self.moved:
                 if boxes[self.y + 2 * direction][self.x] is None or boxes[self.y + 2 * direction][self.x]._colour != self._colour:
                     moves.append((self.x, self.y + 2 * direction))
-
         return moves
 
 
