@@ -56,79 +56,73 @@ class Pieces:
     def withinBounds(self, x, y):
         return 0 <= x <= 7 and 0 <= y <= 7
 
-class Discrete(Pieces):
-    def __init__(self, colour, x, y):
-        super().__init__(colour, x, y)
 
-    def discreteMovement(self, possible, boxes: list):
-        moves = []
-        for move in possible:
-            x = self.x + move[0]
-            y = self.y + move[1]
-            if self.withinBounds(x, y) is True: # is there no other way of doing it? 'and' didn't work
-                if boxes[y][x] is None or boxes[y][x]._colour != self._colour: 
-                    moves.append((x, y))
-        return moves
-        
-
-class Continuous(Pieces): 
+class Rook(Pieces):
     pass
 
-class Knight(Discrete):
+
+class Knight(Pieces):
     def __init__(self, colour, x, y):
         super().__init__(colour, x, y)
 
     def getMoves(self, boxes: list):
+        moves = []
+        # eight possible knight moves
         possible = ((1, 2), (-1, -2), (1, -2), (-1, 2), (2, 1), (-2, -1), (-2, 1), (-1, 2))
-        moves = self.discreteMovement(possible, boxes)
+        for move in possible:
+            coords = (self.y + move[0], self.x + move[1])
+            # checks if the new spot is within bounds and empty or occupied by an oposing piece 
+            if boxes[coords[0]][coords[1]] is None or boxes[coords[0]][coords[1]]._colour != self._colour and self.withinBounds(coords[1], coords[0]) is True: 
+                moves.append(coords[0], coords[1])
         return moves
 
-class King(Discrete):
-    def __init__(self, colour, x, y):
-        super().__init__(colour, x, y)
+class Bishop(Pieces):
+    pass
 
-    def getMoves(self, boxes: list):
-        possible = ((0, 1), (1, 0), (0, -1), (-1, 0))
-        moves = self.discreteMovement(possible, boxes)
-        return moves
 
-class Pawn(Discrete):
+class King(Pieces):
+    pass
+
+
+class Queen(Pieces):
+    pass
+
+
+class Pawn(Pieces):
     def __init__(self, colour, x, y):
         super().__init__(colour, x, y)
         self.moved = False
 
+    # takes a Board._boxes list and returns the possible moves that this piece can make.
     def getMoves(self, boxes: list):
         moves = []
 
         # pawn is unique, as it can only move towards the enemy.
-        if self._colour: direction = -1
-        else: direction = 1
-
-        y = self.y + direction
+        if self._colour:
+            direction = -1
+        else:
+            direction = 1
 
         # checks if the square ahead of it is free
-        if self.withinBounds(self.x, y) is True:
-            if boxes[y][self.x] is None: moves.append((self.x, y))   
+        if boxes[self.y + direction][self.x] is None:
+            moves.append((self.x, self.y + direction))
 
         # checks if there's an oposing piece to take
-        for side in (1, -1):
-            if self.withinBounds(self.x + side, y) is True:
-                check = boxes[y][self.x + side]
-                if check and check._colour != self._colour: moves.append((self.x + side, y)) 
+        if boxes[self.y + direction][self.x + 1] and boxes[self.y + direction][self.x + 1]._colour != self._colour:
+            moves.append((self.x + 1, self.y + direction))
+        if boxes[self.y + direction][self.x - 1] and boxes[self.y + direction][self.x - 1]._colour != self._colour:
+            moves.append((self.x - 1, self.y + direction))
 
+            # if it hasn't moved, it can do 2 steps foreward.
+            if not self.moved:
+                if boxes[self.y + 2 * direction][self.x] is None or boxes[self.y + 2 * direction][self.x]._colour != self._colour:
+                    moves.append((self.x, self.y + 2 * direction))
         return moves
 
-class Rook(Continuous):
-    pass
-
-class Bishop(Continuous):
-    pass
-
-class Queen(Continuous):
-    pass
 
 class Player:
     pass
+
 
 class Chess:
     def __init__(self, white: Player, black: Player):
