@@ -56,10 +56,10 @@ class Pieces:
     def withinBounds(self, x, y):
         return 0 <= x <= 7 and 0 <= y <= 7
 
-class Discrete:
+class Discrete(Pieces):
     pass
 
-class Continuous: 
+class Continuous(Pieces): 
     pass
 
 class Knight(Discrete):
