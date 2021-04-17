@@ -83,7 +83,7 @@ class Continuous(Pieces):
             x, y = tempx, tempy
         print(moves)
         return moves
-
+        pass
 class Knight(Discrete):
     def __init__(self, colour, x, y):
         super().__init__(colour, x, y)
