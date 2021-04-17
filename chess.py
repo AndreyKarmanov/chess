@@ -60,7 +60,29 @@ class Discrete(Pieces):
     pass
 
 class Continuous(Pieces): 
-    pass
+    def __init__(self, colour, x, y):
+        super().__init__(colour, x, y)
+
+    def continuousMovement(self, x, y, possible, boxes: list):
+        moves = []
+        tempx, tempy = x, y
+        for move in possible:
+            print(move)
+            while True:
+                x += move[0]
+                y += move[1]
+                if super().withinBounds(x,y) == False: break
+
+                if boxes[y][x] is None:
+                    moves.append((x, y))
+                elif boxes[y][x]._colour != self._colour:
+                    moves.append((x, y))
+                    break
+                elif boxes[y][x]._colour == self._colour:
+                    break
+            x, y = tempx, tempy
+        print(moves)
+        return moves
 
 class Knight(Discrete):
     def __init__(self, colour, x, y):
@@ -112,13 +134,32 @@ class Pawn(Discrete):
         return moves
 
 class Rook(Continuous):
-    pass
+    def __init__(self, colour, x, y):
+        super().__init__(colour, x, y)
+
+    def getMoves(self, boxes: list):
+        possible = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+        moves = super().continuousMovement(self.x, self.y, possible, boxes)
+        return moves
+
 
 class Bishop(Continuous):
-    pass
+    def __init__(self, colour, x, y):
+        super().__init__(colour, x, y)
+
+    def getMoves(self, boxes: list):
+        possible = [(1, 1), (1, -1), (-1, 1), (-1, -1)]
+        moves = super().continuousMovement(self.x, self.y, possible, boxes)
+        return moves
 
 class Queen(Continuous):
-    pass
+    def __init__(self, colour, x, y):
+        super().__init__(colour, x, y)
+
+    def getMoves(self, boxes: list):
+        possible = [(1, 1), (1, -1), (-1, 1), (-1, -1), (0, 1), (1, 0), (0, -1), (-1, 0)]
+        moves = super().continuousMovement(self.x, self.y, possible, boxes)
+        return moves
 
 class Player:
     pass
