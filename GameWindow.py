@@ -113,23 +113,31 @@ def findpiece(mouse):
 def display():
     WIN.fill((125, 125, 125))
     drawCheckered(50, 50, 8, 8)
+    drawNormal = []
+    heldPiece = None
     for y, row in enumerate(board):
         for x, piece in enumerate(row):
             if piece:
                 if piece != dragged:
-                    getPic(piece)
+                    drawNormal.append(piece)
                 else:
-                    drawDragged(piece)
-                    getPic(piece, True)
-
+                    heldPiece = piece
+    
+    if heldPiece:
+        drawDragged(heldPiece)
+        getPic(heldPiece, True)
+    for piece in drawNormal:
+        getPic(piece)
+    
     pygame.display.update()
 
 
-def drawPiece(piece):
-    asdf = (0, 0, 0)
-    if piece._colour:
-        asdf = (225, 225, 225)
-    pygame.draw.rect(WIN, asdf, squares[piece.y][piece.x], 5)
+# def drawPiece(piece):
+#     asdf = (0, 0, 0)
+#     if piece._colour:
+#         asdf = (225, 225, 225)
+#     piece()
+#     pygame.draw.rect(WIN, asdf, squares[piece.y][piece.x], 5)
 
 
 def drawDragged(piece):
