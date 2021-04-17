@@ -56,12 +56,13 @@ class Pieces:
     def withinBounds(self, x, y):
         return 0 <= x <= 7 and 0 <= y <= 7
 
-
-class Rook(Pieces):
+class Discrete:
     pass
 
+class Continuous: 
+    pass
 
-class Knight(Pieces):
+class Knight(Discrete):
     def __init__(self, colour, x, y):
         super().__init__(colour, x, y)
 
@@ -76,19 +77,10 @@ class Knight(Pieces):
                 moves.append(coords[0], coords[1])
         return moves
 
-class Bishop(Pieces):
+class King(Discrete):
     pass
 
-
-class King(Pieces):
-    pass
-
-
-class Queen(Pieces):
-    pass
-
-
-class Pawn(Pieces):
+class Pawn(Discrete):
     def __init__(self, colour, x, y):
         super().__init__(colour, x, y)
         self.moved = False
@@ -119,10 +111,17 @@ class Pawn(Pieces):
                     moves.append((self.x, self.y + 2 * direction))
         return moves
 
+class Rook(Continuous):
+    pass
+
+class Bishop(Continuous):
+    pass
+
+class Queen(Continuous):
+    pass
 
 class Player:
     pass
-
 
 class Chess:
     def __init__(self, white: Player, black: Player):
