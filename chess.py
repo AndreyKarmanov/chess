@@ -101,7 +101,7 @@ class Knight(Discrete):
         super().__init__(colour, x, y)
 
     def getMoves(self, boxes: list):
-        possible = ((1, 2), (-1, -2), (1, -2), (-1, 2), (2, 1), (-2, -1), (-2, 1), (-1, 2))
+        possible = ((1, 2), (-1, -2), (1, -2), (-1, 2), (2, 1), (-2, -1), (-2, 1), (2, -1))
         moves = self.discreteMovement(possible, boxes)
         return moves
 
@@ -110,7 +110,7 @@ class King(Discrete):
         super().__init__(colour, x, y)
 
     def getMoves(self, boxes: list):
-        possible = ((0, 1), (1, 0), (0, -1), (-1, 0))
+        possible = ((0, 1), (1, 0), (0, -1), (-1, 0), (1, 1), (-1, -1), (1, -1), (-1, 1))
         moves = self.discreteMovement(possible, boxes)
         return moves
 
