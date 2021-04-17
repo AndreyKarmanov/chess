@@ -1,5 +1,6 @@
 import pygame
 import sys
+import os
 import time
 import random
 import chess
@@ -12,6 +13,45 @@ SQUAREWIDTH = int(PIECEWIDTH * 1.2)
 
 dragged = None
 draggedMoves = None
+
+translate = {
+    chess.Pawn: "Pawn",
+    chess.Rook: "Rook",
+    chess.Knight: "Knight",
+    chess.Bishop: "Bishop",
+    chess.King: "King",
+    chess.Queen: "Queen"
+}
+
+pics = {
+    True: {
+    },
+    False: {
+    }
+}
+
+for piece in translate.values():
+    image = pygame.image.load(os.path.join('Assets', f'White{piece}.png'))
+    scaled = pygame.transform.scale(image, (PIECEWIDTH, PIECEHEIGHT))
+    pics[True][piece] = scaled
+
+    image = pygame.image.load(os.path.join('Assets', f'Black{piece}.png'))
+    scaled = pygame.transform.scale(image, (PIECEWIDTH, PIECEHEIGHT))
+    pics[False][piece] = scaled
+
+print(pics)
+
+
+def getPic(Piece: chess.Pieces, dragged=False):
+    if not dragged:
+        x = squares[Piece.y][Piece.x].x + (SQUAREWIDTH - PIECEWIDTH) / 2
+        y = squares[Piece.y][Piece.x].y + (SQUAREWIDTH - PIECEHEIGHT) / 2
+    else:
+        x = pygame.mouse.get_pos()[0] - PIECEWIDTH / 2
+        y = pygame.mouse.get_pos()[1] - PIECEHEIGHT / 2
+
+    WIN.blit(pics[Piece._colour][translate[type(Piece)]], (x, y))
+
 
 class Square(pygame.Rect):
     occupied = False
@@ -47,6 +87,7 @@ board = c.getBoard()
 for num, row in enumerate(board):
     print([type(x) for x in row], num)
 
+
 def drawCheckered(x, y, width, height):
     black = pygame.Rect(x, y, SQUAREWIDTH * width, SQUAREWIDTH * height)
     pygame.draw.rect(WIN, COLOURONE, black, 0)
@@ -76,9 +117,10 @@ def display():
         for x, piece in enumerate(row):
             if piece:
                 if piece != dragged:
-                    drawPiece(piece)
+                    getPic(piece)
                 else:
                     drawDragged(piece)
+                    getPic(piece, True)
 
     pygame.display.update()
 
@@ -96,11 +138,11 @@ def drawDragged(piece):
         asdf = (225, 225, 225)
 
     for x, y in draggedMoves:
-            pygame.draw.rect(WIN, (0, 155, 0), squares[y][x], 0)
-    mouse = pygame.mouse.get_pos()
-    rect = pygame.Rect(mouse[0] - PIECEWIDTH/2, mouse[1] -
-                       PIECEHEIGHT/2, SQUAREWIDTH, SQUAREWIDTH)
-    pygame.draw.rect(WIN, asdf, rect, 5)
+        pygame.draw.rect(WIN, (0, 155, 0), squares[y][x], 0)
+    # mouse = pygame.mouse.get_pos()
+    # rect = pygame.Rect(mouse[0] - PIECEWIDTH/2, mouse[1] -
+    #                    PIECEHEIGHT/2, SQUAREWIDTH, SQUAREWIDTH)
+    # pygame.draw.rect(WIN, asdf, rect, 5)
 
 
 def run():
@@ -116,7 +158,7 @@ def run():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     if dragged := findpiece(pygame.mouse.get_pos()):
-                        print("dragging", dragged.x, dragged.y)
+                        print("dragging", dragged.x, dragged.y, type(dragged))
                         draggedMoves = dragged.getMoves(board)
 
             if event.type == pygame.MOUSEBUTTONUP:
@@ -124,7 +166,8 @@ def run():
                     if dragged is not None:
                         if coords := findSquare():
                             if coords in dragged.getMoves(board):
-                                c.move(dragged.x, dragged.y, coords[0], coords[1])
+                                c.move(dragged.x, dragged.y,
+                                       coords[0], coords[1])
                                 board = c.getBoard()
                     dragged = None
         display()
@@ -136,5 +179,6 @@ def findSquare():
             if squares[y][x].collidepoint(pygame.mouse.get_pos()):
                 return (x, y)
     return None
+
 
 run()
