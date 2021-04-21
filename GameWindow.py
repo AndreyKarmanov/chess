@@ -30,37 +30,16 @@ pics = {
     }
 }
 
-for piece in translate.values():
-    image = pygame.image.load(os.path.join('Assets', f'White{piece}.png'))
-    scaled = pygame.transform.scale(image, (PIECEWIDTH, PIECEHEIGHT))
-    pics[True][piece] = scaled
 
-    image = pygame.image.load(os.path.join('Assets', f'Black{piece}.png'))
-    scaled = pygame.transform.scale(image, (PIECEWIDTH, PIECEHEIGHT))
-    pics[False][piece] = scaled
+def loadImages():
+    for piece in translate.values():
+        image = pygame.image.load(os.path.join('Assets', f'White{piece}.png'))
+        scaled = pygame.transform.scale(image, (PIECEWIDTH, PIECEHEIGHT))
+        pics[True][piece] = scaled
 
-print(pics)
-
-
-def getPic(Piece: chess.Pieces, dragged=False):
-    if not dragged:
-        x = squares[Piece.y][Piece.x].x + (SQUAREWIDTH - PIECEWIDTH) / 2
-        y = squares[Piece.y][Piece.x].y + (SQUAREWIDTH - PIECEHEIGHT) / 2
-    else:
-        x = pygame.mouse.get_pos()[0] - PIECEWIDTH / 2
-        y = pygame.mouse.get_pos()[1] - PIECEHEIGHT / 2
-
-    WIN.blit(pics[Piece._colour][translate[type(Piece)]], (x, y))
-
-
-class Square(pygame.Rect):
-    occupied = False
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-    def pos(self):
-        return (self.x, self.y)
+        image = pygame.image.load(os.path.join('Assets', f'Black{piece}.png'))
+        scaled = pygame.transform.scale(image, (PIECEWIDTH, PIECEHEIGHT))
+        pics[False][piece] = scaled
 
 
 def genSquares(x, y, width, height):
@@ -69,23 +48,22 @@ def genSquares(x, y, width, height):
         for cols in range(width):
             x1 = x + cols * SQUAREWIDTH
             y1 = y + rows * SQUAREWIDTH
-            sqr = Square(x1, y1, SQUAREWIDTH, SQUAREWIDTH)
-            squares[rows].append(Square(x1, y1, SQUAREWIDTH, SQUAREWIDTH))
-
+            squares[rows].append(pygame.Rect(x1, y1, SQUAREWIDTH, SQUAREWIDTH))
     return squares
-
-
-squares = genSquares(50, 50, 8, 8)
-
-
-def randomColour():
-    return random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)
 
 
 c = chess.Chess(chess.Player(), chess.Player())
 board = c.getBoard()
-for num, row in enumerate(board):
-    print([type(x) for x in row], num)
+squares = genSquares(50, 50, 8, 8)
+loadImages()
+
+
+def findpiece(mouse):
+    for y, row in enumerate(board):
+        for x, piece in enumerate(row):
+            if piece and squares[y][x].collidepoint(mouse):
+                return piece
+    return None
 
 
 def drawCheckered(x, y, width, height):
@@ -102,55 +80,51 @@ def drawCheckered(x, y, width, height):
                 pygame.draw.rect(WIN, COLOURTWO, square, 0)
 
 
+def getPic(Piece: chess.Pieces, dragged=False):
+    if not dragged:
+        x = squares[Piece.y][Piece.x].x + (SQUAREWIDTH - PIECEWIDTH) / 2
+        y = squares[Piece.y][Piece.x].y + (SQUAREWIDTH - PIECEHEIGHT) / 2
+    else:
+        mouse = pygame.mouse.get_pos()
+        x = mouse[0] - PIECEWIDTH / 2
+        y = mouse[1] - PIECEHEIGHT / 2
+
+    WIN.blit(pics[Piece._colour][translate[type(Piece)]], (x, y))
+
+
+def display():
+    WIN.fill((125, 125, 125))
+    drawCheckered(50, 50, 8, 8)
+
+    if dragged:
+        for x, y in draggedMoves:
+            pygame.draw.rect(WIN, (34, 139, 34), squares[y][x], 0)
+
+        getPic(dragged, True)
+
+    for y, row in enumerate(board):
+        for x, piece in enumerate(row):
+            if piece:
+                if piece != dragged:
+                    getPic(piece)
+
+    pygame.display.update()
+
+
+def findSquare():
+    for y, row in enumerate(squares):
+        for x, square in enumerate(row):
+            if squares[y][x].collidepoint(pygame.mouse.get_pos()):
+                return (x, y)
+    return None
+
+
 def findpiece(mouse):
     for y, row in enumerate(board):
         for x, piece in enumerate(row):
             if piece and squares[y][x].collidepoint(mouse):
                 return piece
     return None
-
-
-def display():
-    WIN.fill((125, 125, 125))
-    drawCheckered(50, 50, 8, 8)
-    drawNormal = []
-    heldPiece = None
-    for y, row in enumerate(board):
-        for x, piece in enumerate(row):
-            if piece:
-                if piece != dragged:
-                    drawNormal.append(piece)
-                else:
-                    heldPiece = piece
-    
-    if heldPiece:
-        drawDragged(heldPiece)
-        getPic(heldPiece, True)
-    for piece in drawNormal:
-        getPic(piece)
-    
-    pygame.display.update()
-
-
-# def drawPiece(piece):
-#     asdf = (0, 0, 0)
-#     if piece._colour:
-#         asdf = (225, 225, 225)
-#     piece()
-#     pygame.draw.rect(WIN, asdf, squares[piece.y][piece.x], 5)
-
-
-def drawDragged(piece):
-    asdf = (0, 0, 0)
-    if piece._colour:
-        asdf = (225, 225, 225)
-
-    for x, y in draggedMoves:
-        pygame.draw.rect(WIN, (0, 155, 0), squares[y][x], 0)
-    # mouse = pygame.mouse.get_pos()
-    # rect = pygame.Rect(mouse[0] - PIECEWIDTH/2, mouse[1] -
-    #                    PIECEHEIGHT/2, SQUAREWIDTH, SQUAREWIDTH)
-    # pygame.draw.rect(WIN, asdf, rect, 5)
 
 
 def run():
@@ -169,24 +143,16 @@ def run():
                         print("dragging", dragged.x, dragged.y, type(dragged))
                         draggedMoves = dragged.getMoves(board)
 
-            if event.type == pygame.MOUSEBUTTONUP:
+            elif event.type == pygame.MOUSEBUTTONUP:
                 if event.button == 1:
                     if dragged is not None:
                         if coords := findSquare():
-                            if coords in dragged.getMoves(board):
+                            if coords in draggedMoves:
                                 c.move(dragged.x, dragged.y,
                                        coords[0], coords[1])
                                 board = c.getBoard()
-                    dragged = None
+                        dragged = None
         display()
-
-
-def findSquare():
-    for y, row in enumerate(squares):
-        for x, square in enumerate(row):
-            if squares[y][x].collidepoint(pygame.mouse.get_pos()):
-                return (x, y)
-    return None
 
 
 run()
