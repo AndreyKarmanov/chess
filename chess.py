@@ -125,12 +125,16 @@ class Pawn(Discrete):
         # pawn is unique, as it can only move towards the enemy.
         if self._colour: direction = -1
         else: direction = 1
-
         y = self.y + direction
+        y2 = self.y + direction * 2 
+
+        # for unmoved pawns can move two spots as well as one
+        if self.moved is False and boxes[y][self.x] is None and boxes[y2][self.x] is None: 
+            moves.append((self.x, y2))
 
         # checks if the square ahead of it is free
         if self.withinBounds(self.x, y) is True:
-            if boxes[y][self.x] is None: moves.append((self.x, y))   
+            if boxes[y][self.x] is None: moves.append((self.x, y))  
 
         # checks if there's an oposing piece to take
         for side in (1, -1):
