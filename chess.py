@@ -189,9 +189,6 @@ class Chess:
         # Moves and deletes the piece that was at the landing square (if any)
         self.board._boxes[endY][endX] = self.board._boxes[startY][startX]
         self.board._boxes[startY][startX] = None
-        print(f'Moved ({startX}, {startY}) to ({endX}, {endY})')
-        print(self.board._boxes[startY][startX],
-              self.board._boxes[endY][endX], "swapped")
         self.board._boxes[endY][endX].x = endX
         self.board._boxes[endY][endX].y = endY
 
