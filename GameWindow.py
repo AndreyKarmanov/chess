@@ -111,6 +111,22 @@ def display():
     pygame.display.update()
 
 
+def findSquare():
+    for y, row in enumerate(squares):
+        for x, square in enumerate(row):
+            if squares[y][x].collidepoint(pygame.mouse.get_pos()):
+                return (x, y)
+    return None
+
+
+def findpiece(mouse):
+    for y, row in enumerate(board):
+        for x, piece in enumerate(row):
+            if piece and squares[y][x].collidepoint(mouse):
+                return piece
+    return None
+
+
 def run():
     global dragged, board, draggedMoves
     clock = pygame.time.Clock()
@@ -137,14 +153,6 @@ def run():
                                 board = c.getBoard()
                         dragged = None
         display()
-
-
-def findSquare():
-    for y, row in enumerate(squares):
-        for x, square in enumerate(row):
-            if squares[y][x].collidepoint(pygame.mouse.get_pos()):
-                return (x, y)
-    return None
 
 
 run()
